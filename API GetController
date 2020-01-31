@@ -1,0 +1,112 @@
+//This part of code goes into your API [CLASS]Controller.cs file
+ 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
+ 
+//API controller to execute a Get[CLASS_OBJECT] from [CLASS]DB Controller
+        [Route("get[CLASS_OBJECT]")]
+        [HttpGet]
+        public List<[CLASS]> Get[CLASS_OBJECTS]()
+        {
+            List<[CLASS]> [LIST_NAME] = new List<[CLASS]>();
+ 
+            [CLASS]DB DB = new [CLASS]DB();
+            [CLASS]List = DB.Get[CLASS_OBJECTS]();
+ 
+            return [LIST_NAME];
+        }
+ 
+//This part of code goes into your Application [CLASS]DB.cs file
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data.SqlClient;
+ 
+//Connection string to SQL-Database
+string ConnectionString = "";
+ 
+public List<[CLASS]> Get[CLASS_OBJECTS]()
+        {
+            string sqlText = @"SELECT * FROM [DATABASE_TABLE]";
+ 
+            List<[CLASS]> [CLASS_OBJECTS]list = new List<[CLASS]>();
+ 
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand comm = new SqlCommand(sqlText, conn))
+                {
+                    try
+                    {
+                        conn.Open();
+ 
+                        using (SqlDataReader dr = comm.ExecuteReader())
+                        {
+                            if (dr.HasRows)
+                            {
+                                while (dr.Read())
+                                {
+                                    //Constructor for new [CLASS] Object
+                                    [CLASS] SQL[CLASS] = new [CLASS]()
+                                    {
+                                        ID = new Guid(dr["SQL_COLUMN_NAME"].ToString())
+                                        IntergerValue = Convert.ToInt32(dr["SQL_COLUMN_NAME"].ToString()),
+                                        StringValue = dr["SQL_COLUMN_NAME"].ToString(),
+                                        FloatValue = float.Parse(dr["SQL_COLUMN_NAME"].ToString()),
+                                        BoolValue = (bool)dr["SQL_COLUMN_NAME"],
+                                        DoubleValue = Convert.ToDouble(dr["SQL_COLUMN_NAME"].ToString()),
+                                    };
+ 
+                                    [CLASS]list.Add(SQL[CLASS]);
+                                }
+                            }
+                        }
+                        conn.Close();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        if (conn.State == System.Data.ConnectionState.Open)
+                        {
+                            conn.Close();
+                        }
+                    }
+                }
+            }
+            return [Class]list;
+        }
+ 
+//This part of code goes into your application .cs file
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ 
+using System.Net.Http.Headers;
+using System.Net.Http;
+using Newtonsoft.Json;
+ 
+//BaseAddress of your API
+public string apiBaseAddress = "";
+ 
+List<[CLASS]> [LIST_NAME] = new List<[CLASS]>();
+                //Get [CLASS] from Database
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiBaseAddress);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new             System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+ 
+                    HttpResponseMessage response = client.GetAsync("/api/[API_CONTROLLER_NAME]/[API_METHOD_NAME]").Result;
+ 
+                    var text = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+ 
+                    [LIST_NAME]= JsonConvert.DeserializeObject<List<CLASS>>(text);  
+                };
