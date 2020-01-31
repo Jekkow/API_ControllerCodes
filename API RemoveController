@@ -1,0 +1,101 @@
+//This part of code goes into your API [CLASS]Controller.cs file
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
+ 
+//API controller to execute Remove[CLASS] from [CLASS]DB Controller
+        [Route("remove[CLASS_OBJECT]")]
+        [HttpPost]
+        public HttpResponseMessage Remove[CLASS_OBJECT]([FromBody] dynamic dynamic[CLASS])
+        {
+            [CLASS]DB DB = new [CLASS]DB();
+            [CLASS] [CLASS_OBJECT_NAME] = JsonConvert.DeserializeObject<[CLASS]>(dynamic[CLASS].ToString());
+ 
+            DB.Remove[CLASS_OBJECT]([CLASS].[ATTRIBUTE]);
+ 
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        }
+ 
+//This part of code goes into your [CLASS]DB.cs file
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data.SqlClient;
+ 
+//Connection string to SQL-Database
+string ConnectionString = "";
+ 
+//Remove[CLASS_OBJECT] SQL Command bases on an Class Object ID
+        public void Remove[CLASS_OBJECT](int ID)
+        {
+            string sqlText = "DELETE FROM [DATABASE_TABLE] WHERE ID = @ID;";
+            Console.WriteLine(ConnectionString);
+ 
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand comm = new SqlCommand(sqlText, conn))
+                {
+                    try
+                    {
+                        conn.Open();
+ 
+                        SqlParameter p = new SqlParameter();
+                        p.ParameterName = "@ID";
+                        p.SqlDbType = System.Data.SqlDbType.NVarChar;
+                        p.Value = ID;
+                        comm.Parameters.Add(p);
+ 
+                        comm.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        if (conn.State == System.Data.ConnectionState.Open)
+                        {
+                            conn.Close();
+                        }
+                    }
+                }
+            }
+        }
+ 
+//This part of code goes into your application .cs file
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ 
+using System.Net.Http.Headers;
+using System.Net.Http;
+using Newtonsoft.Json;
+ 
+//BaseAddress of your API
+public string apiBaseAddress = "";
+ 
+//Remove [CLASS_OBJECT] out Database
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiBaseAddress);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var jsString = JsonConvert.SerializeObject([CLASS_OBJECT]);
+ 
+                HttpContent httpContent = new StringContent(jsString, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync("/api/[API_CONTROLLER_NAME]/[API_METHOD_NAME]", httpContent).Result;
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+ 
+                }
+                else
+                {
+ 
+                }
+            };
